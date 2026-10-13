@@ -58,6 +58,8 @@ Each kind of file is checked with its own set of rules:
 
 npm run analyze-slint-rules
 
+helpful when we want to fix any eslint-rule violations
+
 ## How to run es-lint
 
 npm run lint-ci          # whole project 
