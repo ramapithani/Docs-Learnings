@@ -54,6 +54,10 @@ Each kind of file is checked with its own set of rules:
 │ Mocks (__mocks__)                │ eslint/mocks.config.js      │
 └──────────────────────────────────┴─────────────────────────────┘
 
+## How to know  which files each eslint-rule raise errors/warnings
+
+npm run analyze-slint-rules
+
 ## How to run es-lint
 
 npm run lint-ci          # whole project 
