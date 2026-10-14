@@ -97,6 +97,8 @@ If a rule is wrong for one particular line, you can switch it off for that line 
 // eslint-disable-next-line custom-rules/no-hardcoded-literals -- reason here
 const x = 'abc';
 
+reportUnusedDisableDirectives
+
 Rules for doing this:
 - Always name the rule. A bare // eslint-disable is not allowed.
 - Only switch it off for one line, with eslint-disable-next-line or eslint-disable-line. Turning a rule off for a whole file or block is not allowed.
