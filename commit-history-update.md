@@ -1,5 +1,23 @@
 # Git Commands for Reviewing and Cleaning Up Commit History (Here PR7041)
 
+# 1. View commits not in Sprint16
+```sh
+git log --oneline --decorate origin/Sprint16..HEAD
+
+git fetch origin
+```
+# 2. Interactively rebase to clean up commit history
+
+```sh
+git rebase -i origin/Sprint16
+```
+
+# 3. Push rewritten history to GitHub
+
+```sh
+git push --force-with-lease origin my-branch
+```
+
 ## 1. View PR Details
 
 ```sh
