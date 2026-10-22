@@ -1,124 +1,149 @@
-# AgentRC — Simple Explanation and Usage in `finalyzer-ui`
+# AgentRC: General Guide
 
 ## 1. What is AgentRC?
 
-AgentRC is a tool that helps AI coding assistants, such as Claude Code and GitHub Copilot, understand a software project better.
+AgentRC is an open-source tool that helps prepare software repositories for AI-assisted development. It helps AI coding assistants, such as GitHub Copilot and Claude Code, understand a project's structure, conventions, and development workflows.
 
-It checks whether a repository has enough useful guidance for AI, can generate project-specific instructions, and can evaluate whether those instructions are helpful.
+In simple terms, AgentRC helps make project guidance clearer so AI assistants can work more effectively with a codebase.
 
-**In simple words:** AgentRC helps AI assistants work with a codebase by giving them clearer information about how the project works and how the team writes code.
+## 2. How AgentRC works
 
-## 2. How does it work?
+AgentRC follows three main stages:
 
-AgentRC follows three main steps:
+1. **Measure** — Analyze a repository's AI readiness and identify gaps in project guidance.
+2. **Generate** — Create project-specific instruction files, evaluation cases, and development configuration.
+3. **Maintain** — Evaluate whether instructions are useful and help identify when they may need updating.
 
-1. **Measure** — Analyze the repository and identify gaps in its AI-development guidance.
-2. **Generate** — Create instructions and related configuration tailored to the repository.
-3. **Maintain** — Evaluate the instructions and review them when the codebase or team conventions change.
+These stages form a cycle: measure the repository, improve its guidance, and review that guidance as the project evolves.
 
-## 3. Do I need to clone AgentRC into `finalyzer-ui`?
+## 3. Main commands
 
-**No.** You do not need to copy or clone the Microsoft AgentRC source repository into `finalyzer-ui`.
+AgentRC can be run from a repository's root directory using `npx`. The README specifies Node.js 22 or later.
 
-You can run AgentRC from the root of your existing project using `npx`. It analyzes the project you're currently in.
-
-## 4. How to try AgentRC in `finalyzer-ui`
-
-### Step 1: Open the project folder
-
-```bash
-cd /path/to/finalyzer-ui
-```
-
-Replace the example path with the actual path to your local `finalyzer-ui` repository.
-
-### Step 2: Check the prerequisites
-
-The AgentRC README says Node.js 22 or later is required.
+Check the environment:
 
 ```bash
 node --version
 npm --version
 ```
 
-If your Node.js version is below 22, check with your team before changing your development environment.
-
-### Step 3: Check the project's AI readiness
+Check AI readiness:
 
 ```bash
 npx github:microsoft/agentrc readiness
 ```
 
-This checks the repository and reports areas where AI-development guidance may be missing.
-
-### Step 4: Initialize AgentRC if appropriate
+Initialize AgentRC:
 
 ```bash
 npx github:microsoft/agentrc init
 ```
 
-This runs AgentRC's setup workflow. Review what it proposes or creates before keeping the changes. Because this is a team repository, ask your mentor or team before committing generated configuration.
+Generate instruction files:
 
-### Step 5: Generate instructions for AI coding assistants
+```bash
+npx github:microsoft/agentrc instructions
+```
 
-The README describes generating an `AGENTS.md` file for multi-agent support:
+Evaluate instruction quality:
+
+```bash
+npx github:microsoft/agentrc eval
+```
+
+Generate an `AGENTS.md` file for multi-agent support, as described in the repository README:
 
 ```bash
 npx github:microsoft/agentrc instructions --output AGENTS.md
 ```
 
-Check the current command help and repository documentation if the installed version uses different options.
+Commands and options may change because AgentRC is experimental and under active development. Check the current documentation and command help before using them.
 
-`AGENTS.md` can provide project-specific guidance, such as where components live, how to run tests, and which coding conventions to follow. Review the generated content for accuracy before relying on it.
+## 4. Important generated files
 
-### Step 6: Review the changes
+| File | Purpose |
+|---|---|
+| `.github/copilot-instructions.md` | Provides repository-specific guidance to GitHub Copilot. |
+| `AGENTS.md` | Provides shared instructions for supported AI coding agents. |
+| `.vscode/mcp.json` | Configures MCP server connections for supported workflows. |
+| `.vscode/settings.json` | Contains VS Code settings. |
+| `agentrc.eval.json` | Defines evaluation cases used to assess instruction quality. |
+
+The files generated depend on the command, configuration, and repository. Generated content should be reviewed for accuracy before it is adopted.
+
+## 5. Using AgentRC with an existing project
+
+AgentRC does not need to be cloned into the target project. It can be invoked with `npx` from the root of an existing repository.
+
+A typical workflow is:
+
+1. Open the repository's root directory.
+2. Check that Node.js 22 or later is available.
+3. Run the readiness command to identify gaps.
+4. Generate or initialize project guidance where appropriate.
+5. Review the generated and modified files.
+6. Test the instructions and commit approved changes according to the team's workflow.
+
+For example, to analyze an existing React project:
 
 ```bash
-git status
-git diff
+cd /path/to/project
+npx github:microsoft/agentrc readiness
 ```
 
-Make sure you understand every generated or modified file. Do not commit generated files until you and your team are happy with them.
+Replace `/path/to/project` with the repository's actual local path.
 
-## 5. How does Claude Code use the instructions?
+## 6. How AI coding assistants use the generated instructions
 
-Once suitable instructions such as `AGENTS.md` are in the project, Claude Code can use them as context while working in that repository.
+AI coding assistants can use applicable instruction files as context while working in a repository. Instructions may describe:
 
-For example, the instructions might tell Claude Code to:
+- Project structure and architecture.
+- Coding conventions and patterns.
+- Existing components and utilities to reuse.
+- Commands for linting, testing, and building.
+- Restrictions on unrelated or risky changes.
 
-- Reuse existing UI components instead of creating duplicates.
-- Follow the project's TypeScript and React patterns.
-- Run the relevant lint and test commands.
-- Avoid changing unrelated files.
+For example, a project instruction might tell an assistant to reuse existing UI components and run relevant lint checks after modifying a component. Such instructions should reflect actual team practices; they are not guaranteed to be generated exactly this way.
 
-These are examples of possible instructions, not guaranteed text generated by AgentRC. Always check that instructions match your team's actual practices.
+Instructions guide an AI assistant but do not guarantee that every code change will be correct. Code review, tests, and other normal engineering checks remain necessary.
 
-## 6. Do I need to run AgentRC every time?
+## 7. When should AgentRC be run again?
 
-No.
+AgentRC does not need to be run for every coding task.
 
-- **Initially:** Run it to assess the repository and create or improve instructions.
-- **During normal development:** Claude Code can use the saved instructions; you do not need to run AgentRC for every coding task.
-- **When project conventions or architecture change:** Review and update the instructions, then use AgentRC's instruction-generation or evaluation commands as appropriate.
-- **For ongoing checks:** Your team can configure CI workflows to help detect when instructions may be outdated.
+- **Initial setup:** Analyze the repository and generate or improve instructions.
+- **Routine development:** The saved instructions can be used by supported AI coding assistants.
+- **When conventions or architecture change:** Review and update the relevant instructions, then evaluate them as needed.
+- **Ongoing maintenance:** CI workflows can be configured to help detect instruction drift.
 
-AgentRC does not automatically rewrite instructions every time code changes unless an appropriate automation workflow is configured.
+Instructions are not automatically rewritten every time code changes unless an appropriate automation workflow is configured.
 
-## 7. A simple example
+## 8. AgentRC and APM
 
-Suppose `finalyzer-ui` has a convention that developers should reuse existing grid components and run lint checks after changing UI code.
+AgentRC and APM have different roles:
 
-Without clear project instructions, Claude Code might not know these expectations.
+- **AgentRC** generates and evaluates repository-specific AI guidance.
+- **APM (Agent Package Manager)** distributes reusable instructions, skills, and prompts across repositories.
 
-With accurate instructions in `AGENTS.md`, Claude Code has clearer guidance to follow when making changes. You should still review the code, run tests and linting, and inspect the Git diff.
+For example, AgentRC can help tailor guidance to one codebase, while APM can help share common engineering standards across a team or organization.
 
-## 8. How to explain AgentRC to your team
+## 9. AgentRC and GitHub Agentic Workflows
 
-> AgentRC helps prepare a codebase for AI-assisted development. It analyzes the repository to find gaps in project guidance, generates instructions tailored to the codebase, and helps evaluate and maintain those instructions. In `finalyzer-ui`, we can run AgentRC from the existing project folder and provide Claude Code with project-specific guidance through a reviewed `AGENTS.md` file. We don't need to clone the AgentRC source repository into our project.
+The AgentRC repository also uses GitHub Agentic Workflows to automate maintenance tasks, such as readiness reporting, issue triage, and CI failure diagnosis.
 
-## Important notes
+According to the repository README, workflow definitions are written in Markdown, and `gh aw compile` generates the `.lock.yml` files used by GitHub Actions. CI checks whether the generated files remain consistent with their source definitions.
 
-- The AgentRC README describes the project as experimental and under active development, so commands and behavior may change.
-- Use Node.js 22 or later, as required by the README.
-- Review generated files and follow your team's approval process before committing them.
-- Instructions help guide Claude Code; they do not guarantee that every generated code change will be correct.
+Automated findings and proposed changes still require appropriate validation and review.
+
+## 10. Recommended practices
+
+- Read the repository's documentation before running setup or generation commands.
+- Review all generated files before committing them.
+- Keep instructions concise, accurate, and aligned with the team's real conventions.
+- Re-evaluate instructions when architecture, tooling, or development practices change.
+- Use tests, linting, code review, and CI alongside AI-generated guidance.
+- Follow organizational security and approval policies, especially when configuring MCP servers or automation.
+
+## Summary
+
+AgentRC helps make a software repository more suitable for AI-assisted development by measuring AI readiness, generating tailored project guidance, and evaluating whether that guidance remains useful. It can be run against an existing repository without cloning the AgentRC source code into it. Generated instructions can help AI coding assistants follow project conventions, while regular review and appropriate automation help keep those instructions accurate as the codebase evolves.
